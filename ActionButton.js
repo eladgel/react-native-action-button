@@ -12,7 +12,7 @@ export default class ActionButton extends Component {
 
   constructor(props) {
     super(props);
-
+    this.isOpened=false;
     this.state = {
       active: props.active,
       btnOutRange: props.btnOutRange || props.buttonColor || 'rgba(0,0,0,1)',
@@ -96,9 +96,10 @@ export default class ActionButton extends Component {
   //////////////////////
 
   render() {
+    var viewPointerEvent = this.isOpened?undefined:'none';
     return (
       <View pointerEvents="box-none" style={styles.overlay}>
-        <Animated.View pointerEvents="none" style={[styles.overlay, {
+        <Animated.View pointerEvents={viewPointerEvent} style={[styles.overlay, {
           backgroundColor: this.props.bgColor,
           opacity: this.state.anim
         }]}>
@@ -145,6 +146,7 @@ export default class ActionButton extends Component {
           activeOpacity={0.85}
           onLongPress={this.props.onLongPress}
           onPress={() => {
+            this.isOpened = !this.isOpened;
             this.props.onPress()
             if (this.props.children) this.animateButton()
           }}>
@@ -158,17 +160,17 @@ export default class ActionButton extends Component {
   }
 
   _renderButtonIcon() {
-    if (this.props.icon) return this.props.icon
+     var text = this.props.text || '+';
 
     return (
-      <Animated.Text style={[styles.btnText, {
+        <Animated.Text style={[styles.btnText, {
         color: this.state.anim.interpolate({
           inputRange: [0, 1],
           outputRange: [this.props.buttonTextColor, this.state.btnOutRangeTxt]
         })
-      }]}>
-        +
-      </Animated.Text>
+      },this.props.buttonStyle]}>
+          {text}
+        </Animated.Text>
     )
   }
 
@@ -228,10 +230,11 @@ export default class ActionButton extends Component {
   }
 
   reset() {
+    this.isOpened = false;
     if(this.props.onReset){
       this.props.onReset();
     }
-    
+
     Animated.spring(this.state.anim, {
       toValue: 0,
       duration: 250,
