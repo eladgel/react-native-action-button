@@ -147,8 +147,14 @@ export default class ActionButton extends Component {
           onLongPress={this.props.onLongPress}
           onPress={() => {
             this.isOpened = !this.isOpened;
-            this.props.onPress()
-            if (this.props.children) this.animateButton()
+
+            return new Promise(function (resolve, reject) {
+              this.props.onPress()
+              resolve(undefined);
+            }.bind(this)).then(function(){
+            if (this.props.children) this.animateButton();
+            }.bind(this));
+
           }}>
           <Animated.View
             style={animatedViewStyle}>
